@@ -25,9 +25,22 @@ async function run() {
     await client.connect();
 
     const bloodCollection = client.db('BloodDb').collection('BloodNeed');
+    const UserLogin = client.db('BloodDb').collection('UserCollection');
 
     app.get('/BloodNeed', async (req, res) => {
       const result = await bloodCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/UserCollection', async (req, res) => {
+      const result = await UserLogin.find().toArray();
+      res.send(result);
+    });
+
+    app.post('/UserCollection', async (req, res) => {
+      const newLogin = req.body;
+      console.log(newLogin);
+      const result = await UserLogin.insertOne(newLogin);
       res.send(result);
     });
 
