@@ -26,6 +26,7 @@ async function run() {
 
     const bloodCollection = client.db('BloodDb').collection('BloodNeed');
     const UserLogin = client.db('BloodDb').collection('UserCollection');
+    const bloodRequest = client.db('bloodDb').collection('bloodRequest');
 
     app.get('/BloodNeed', async (req, res) => {
       const result = await bloodCollection.find().toArray();
@@ -39,10 +40,50 @@ async function run() {
 
     app.post('/UserCollection', async (req, res) => {
       const newLogin = req.body;
+      const query = { email: newLogin.email };
+      const existingUser = await UserLogin.findOne(query);
+      if (existingUser) {
+        return res.send({ message: 'User Already exists', insertedId: null });
+      }
       console.log(newLogin);
       const result = await UserLogin.insertOne(newLogin);
       res.send(result);
     });
+
+    app.get('/bloodRequest', async (req, res) => {
+      const result = await bloodRequest.find().toArray();
+      res.send(result);
+    });
+
+    app.post('/bloodRequest', async (req, res) => {
+      const newRequest = req.body;
+      console.log(newRequest);
+      const result = await bloodRequest.insertOne(newRequest);
+      res.send(result);
+    });
+
+    // {
+    //       app.post('/adds', async (req, res) => {
+    //   const newPost = req.body;
+    //   console.log(newPost);
+    //   const result = await volunteerAdd.insertOne(newPost);
+    //   res.send(result);
+    // });
+
+    // }
+
+    // {
+    //   app.post('/newuser', async (req, res) => {
+    //     const newUsers = req.body;
+    //     const query = { email: newUsers.email };
+    //     const existingUser = await userCollection.findOne(query);
+    //     if (existingUser) {
+    //       return res.send({ message: 'User Already exists', insertedId: null });
+    //     }
+    //     const result = await userCollection.insertOne(newUsers);
+    //     res.send(result);
+    //   });
+    // }
 
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
